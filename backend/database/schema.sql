@@ -1,3 +1,4 @@
+-- schema.sql
 CREATE TABLE roles (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(50) UNIQUE NOT NULL,
@@ -13,9 +14,5 @@ CREATE TABLE users (
   role_id INT NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  
-  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT,
-  INDEX idx_email (email),
-  INDEX idx_role_id (role_id),
-  INDEX idx_is_active (is_active)
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
