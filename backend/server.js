@@ -4,6 +4,7 @@
 
 import "dotenv/config"; // Charge les variables d'environnement
 import app from "./src/app.js";
+import pool from "./database/pool.js"; // ← AJOUTER
 
 // === Configuration du Port ===
 const PORT = process.env.PORT || 3001;
