@@ -1,4 +1,8 @@
-# === Service Base de Données ===
+# ==========================================
+# XIII Backend - Docker Compose Configuration
+# ==========================================
+
+services:
   xiii-db:
     image: mysql:8.4
     container_name: xiii-db
@@ -20,12 +24,11 @@
       - xiii-network
     
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # === Service API Node.js ===
   xiii-api:
     build:
       context: ./backend
@@ -59,3 +62,10 @@
       - xiii-network
     
     command: npm run dev
+
+volumes:
+  xiii_db_data:
+
+networks:
+  xiii-network:
+    driver: bridge

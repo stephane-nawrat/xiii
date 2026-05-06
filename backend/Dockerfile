@@ -22,7 +22,7 @@ COPY package*.json ./
 FROM base AS development
 
 # Installer TOUTES les dépendances (dev + prod)
-RUN npm ci
+RUN npm install
 
 # Copier le code source
 COPY . .
