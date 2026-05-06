@@ -1,0 +1,48 @@
+# ==========================================
+# XIII Backend - Git Ignore Configuration
+# ==========================================
+
+# === Environnement & Secrets ===
+.env
+.env.*
+!.env.sample
+*.pem
+*.key
+
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# === macOS ===
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# === Éditeurs & IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Docker ===
+*.log
+
+# === Base de données ===
+*.sql.gz
+*.dump
+
+# === Build & Temp ===
+dist/
+build/
+tmp/
+*.tmp
+
+# === Tests ===
+coverage/
+.nyc_output/
