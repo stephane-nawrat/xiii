@@ -3,6 +3,7 @@
 // ==========================================
 // Orchestration des requêtes HTTP pour les users
 // Fait le lien entre routes et models
+// Gère les erreurs HTTP et validation métier
 
 // === Import ===
 import models from "../models/registry.js";
@@ -65,7 +66,7 @@ class UserController {
   // === Méthode : create ===
   // POST /api/users - Crée un nouvel utilisateur
   // Paramètres: req (contient body avec données user), res
-  // Retour: JSON avec ID créé et status 201, ou erreur 500
+  // Retour: JSON avec ID créé et status 201, 409 si email existe, ou erreur 500
   async create(req, res) {
     try {
       // Extrait les données depuis le corps de la requête
@@ -88,6 +89,14 @@ class UserController {
         id: insertId,
       });
     } catch (error) {
+      // Gestion spécifique : email en doublon (contrainte UNIQUE)
+      if (error.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({
+          message: "Email already exists",
+        });
+      }
+
+      // Erreur serveur générique
       console.error("Error in create:", error);
       res.status(500).json({
         message: "Error creating user",
@@ -99,7 +108,7 @@ class UserController {
   // === Méthode : update ===
   // PUT /api/users/:id - Met à jour un utilisateur existant
   // Paramètres: req (contient params.id + body avec données), res
-  // Retour: JSON succès, 404 si inexistant, ou erreur 500
+  // Retour: 204 si succès, 404 si inexistant, 409 si email dupliqué, ou erreur 500
   async update(req, res) {
     try {
       // Extrait l'ID depuis l'URL
@@ -126,11 +135,18 @@ class UserController {
         });
       }
 
-      // Retourne succès avec status 200
-      res.status(200).json({
-        message: "User updated successfully",
-      });
+      // Retourne succès sans body (status 204 = No Content)
+      // Standard REST : modification réussie, pas de données à retourner
+      res.sendStatus(204);
     } catch (error) {
+      // Gestion spécifique : email en doublon
+      if (error.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({
+          message: "Email already exists",
+        });
+      }
+
+      // Erreur serveur générique
       console.error("Error in update:", error);
       res.status(500).json({
         message: "Error updating user",
@@ -142,7 +158,7 @@ class UserController {
   // === Méthode : delete ===
   // DELETE /api/users/:id - Supprime un utilisateur
   // Paramètres: req (contient params.id), res
-  // Retour: JSON succès, 404 si inexistant, ou erreur 500
+  // Retour: 204 si succès, 404 si inexistant, ou erreur 500
   async delete(req, res) {
     try {
       // Extrait l'ID depuis l'URL
@@ -159,10 +175,8 @@ class UserController {
         });
       }
 
-      // Retourne succès avec status 200
-      res.status(200).json({
-        message: "User deleted successfully",
-      });
+      // Retourne succès sans body (status 204 = No Content)
+      res.sendStatus(204);
     } catch (error) {
       console.error("Error in delete:", error);
       res.status(500).json({
@@ -174,5 +188,6 @@ class UserController {
 }
 
 // === Export ===
-// Exporte une instance unique de UserController (singleton)
+// Exporte une instance unique de UserController (singleton pattern)
+// Permet d'utiliser directement userController.getAll() dans les routes
 export default new UserController();

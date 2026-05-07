@@ -23,12 +23,12 @@ router.get("/health", (req, res) => {
 });
 
 // === Montage des Sous-Routers ===
-// Routes Users (pas de préfixe /api ici, déjà dans app.js)
-router.use(userRoutes);
+// Routes Users - préfixe /users
+router.use("/users", userRoutes);
 
 // Futurs routers à ajouter ici :
-// router.use(authRoutes);
-// router.use(photoRoutes);
+// router.use("/auth", authRoutes);
+// router.use("/photos", photoRoutes);
 
 // === Export ===
 export default router;
