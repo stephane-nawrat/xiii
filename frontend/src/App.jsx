@@ -1,21 +1,15 @@
-// ==========================================
-// XIII Frontend - App Component
-// ==========================================
-// Configuration routing de l'application
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import ApiTest from './tests/ApiHealthTest';
+import ApiHealthTest from './tests/ApiHealthTest';
+import ApiLoginTest from './tests/ApiLoginTest';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Page d'accueil */}
         <Route path="/" element={<Home />} />
-        
-        {/* Page de test API */}
-        <Route path="/test" element={<ApiTest />} />
+        <Route path="/test" element={<ApiHealthTest />} />
+        <Route path="/test/login" element={<ApiLoginTest />} />
       </Routes>
     </BrowserRouter>
   );

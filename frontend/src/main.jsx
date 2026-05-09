@@ -10,12 +10,15 @@ import { createRoot } from 'react-dom/client'  // API React 18 pour render
 // === Imports Styles & Composants ===
 import './index.css'      // Styles globaux (Tailwind)
 import App from './App.jsx'  // Composant racine
+import { AuthProvider } from './context/AuthContext.jsx' // 
 
 // === Initialisation React ===
 // createRoot: crée une "racine" React dans l'élément #root du DOM
 // StrictMode: active vérifications supplémentaires en développement
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>,
 )
