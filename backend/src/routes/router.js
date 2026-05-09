@@ -8,6 +8,7 @@
 import express from "express";
 import userRoutes from "./user.route.js";
 import authRoutes from "./auth.route.js";
+import adminRoutes from "./admin.route.js";
 
 // === Création Router Principal ===
 const router = express.Router();
@@ -28,6 +29,7 @@ router.get("/health", (req, res) => {
 // Routes Users - préfixe /users
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
+router.use("/admin", adminRoutes);
 // Futurs routers à ajouter ici :
 
 // === Export ===

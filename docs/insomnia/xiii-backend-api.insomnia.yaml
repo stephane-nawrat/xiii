@@ -182,8 +182,8 @@ collection:
     meta:
       id: fld_f12a2b272f834ec5a153aebbdccf03ec
       created: 1778272764890
-      modified: 1778273846912
-      sortKey: -1778272764890
+      modified: 1778314478672
+      sortKey: -1778272764965
       description: ""
     children:
       - url: http://localhost:3001/api/auth/login
@@ -251,6 +251,93 @@ collection:
           isPrivate: false
           description: ""
           sortKey: -1778272789514
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Admin
+    meta:
+      id: fld_a7d87e5a9b7e45d792c6e95b7df8ce9d
+      created: 1778314442866
+      modified: 1778314475682
+      sortKey: -1778272764940
+      description: ""
+    children:
+      - url: http://localhost:3001/api/admin/dashboard
+        name: Admin - GET Dashboard
+        meta:
+          id: req_1f8e1f3a3182499db0a3c679a86287f1
+          created: 1778314484200
+          modified: 1778314850198
+          isPrivate: false
+          description: ""
+          sortKey: -1778314829733
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQHhpaWkubG9jYWwiLCJyb2xlX2lkIjoxLCJpYXQiOjE3NzgzMTQzOTIsImV4cCI6MTc3ODQwMDc5Mn0.A-DOhsO1zqRO2ptrqWeYBg3d2l6MCpej7ilqgXczNqA
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3001/api/admin/users
+        name: Admin - GET Users
+        meta:
+          id: req_3c62d20da4b9417db5367abb6830b3df
+          created: 1778314829633
+          modified: 1778314893168
+          isPrivate: false
+          description: ""
+          sortKey: -1778314829633
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQHhpaWkubG9jYWwiLCJyb2xlX2lkIjoxLCJpYXQiOjE3NzgzMTQzOTIsImV4cCI6MTc3ODQwMDc5Mn0.A-DOhsO1zqRO2ptrqWeYBg3d2l6MCpej7ilqgXczNqA
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3001/api/admin/users
+        name: Admin - GET Users (Visitor)
+        meta:
+          id: req_d43100b7a5b04361933b34f7d0142d4b
+          created: 1778315019962
+          modified: 1778315050374
+          isPrivate: false
+          description: ""
+          sortKey: -1778314829533
         method: GET
         headers:
           - name: User-Agent
