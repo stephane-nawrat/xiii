@@ -1,35 +1,24 @@
 // ==========================================
 // XIII Frontend - App Component
 // ==========================================
-// Composant racine de l'application React
+// Configuration routing de l'application
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import ApiTest from './tests/ApiHealthTest';
 
 function App() {
   return (
-    // Container principal
-    // min-h-screen: hauteur minimum = 100% viewport
-    // bg-cream: background couleur crème (#EFEEE6)
-    // flex items-center justify-center: centrage vertical + horizontal
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      
-      {/* Zone de contenu centrée */}
-      <div className="text-center">
+    <BrowserRouter>
+      <Routes>
+        {/* Page d'accueil */}
+        <Route path="/" element={<Home />} />
         
-        {/* Titre principal */}
-        {/* text-6xl: taille 60px, font-bold: graisse 700, text-carbon: noir (#0C0C0C) */}
-        <h1 className="text-6xl font-bold text-carbon mb-4">
-          XIII
-        </h1>
-        
-        {/* Sous-titre */}
-        {/* text-xl: taille 20px, text-gray-text: gris (#676664) */}
-        <p className="text-xl text-gray-text">
-          Frontend Vite + React 18 + Tailwind 3
-        </p>
-        
-      </div>
-    </div>
+        {/* Page de test API */}
+        <Route path="/test" element={<ApiTest />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-// Export pour utilisation dans main.jsx
 export default App;
