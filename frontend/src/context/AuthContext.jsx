@@ -29,26 +29,37 @@ export function AuthProvider({ children }) {
   // === useEffect : Vérification Token au Chargement ===
   // Exécuté UNE FOIS quand le composant monte
   // Vérifie si un token existe dans localStorage
-  // Si oui → récupère les infos user via l'API
+  // Décoder localement d'abord (instantané), puis vérifier l'API en background
   useEffect(() => {
     // Récupérer le token stocké
     const token = authService.getToken();
     
     if (token) {
-      // Token existe → vérifier qu'il est valide avec l'API
-      authService.getProfile()
-        .then(userData => {
-          // Token valide → stocker user
-          setUser(userData);
-          setLoading(false);
-        })
-        .catch(() => {
-          // Token invalide/expiré → supprimer et déconnecter
+      // Token existe → décoder localement AVANT l'API call
+      // = Instantané, pas de délai, pas de flash blanc
+      const decoded = authService.decodeToken(token);
+      
+      if (decoded) {
+        // Token décodable → setUser immédiatement
+        // L'utilisateur voit la page tout de suite
+        setUser(decoded);
+        setLoading(false);
+        
+        // Vérifier la validité du token avec l'API en arrière-plan
+        // Si le token est expiré, l'API renverra 401 et on logout
+        authService.getProfile().catch(() => {
+          // Token invalide/expiré → logout silencieux
           authService.logout();
-          setLoading(false);
+          setUser(null);
         });
+      } else {
+        // Token corrompu (impossible à décoder)
+        authService.logout();
+        setLoading(false);
+      }
     } else {
       // Pas de token → utilisateur non connecté
+      // Pas besoin de vérifier l'API, on skip direct
       setLoading(false);
     }
   }, []); // [] = exécuté une seule fois au montage
@@ -102,11 +113,28 @@ export function AuthProvider({ children }) {
 
   // === Écran de Chargement ===
   // Affiché pendant la vérification initiale du token
-  // Évite de flash la page login si le user est déjà connecté
+  // Avec l'optimisation, ce spinner n'apparaît presque jamais
+  // (seulement si pas de token ou token corrompu)
   if (loading) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <p className="text-carbon">Loading...</p>
+        {/* Spinner centré */}
+        <svg className="animate-spin h-8 w-8 text-carbon" viewBox="0 0 24 24">
+          <circle 
+            className="opacity-25" 
+            cx="12" 
+            cy="12" 
+            r="10" 
+            stroke="currentColor" 
+            strokeWidth="4"
+            fill="none"
+          />
+          <path 
+            className="opacity-75" 
+            fill="currentColor" 
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
       </div>
     );
   }
