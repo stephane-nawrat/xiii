@@ -40,7 +40,7 @@ export default {
       // === Typographie ===
       // Police sans-serif moderne (Inter)
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["DM Sans", "system-ui", "sans-serif"],
       },
     },
   },
