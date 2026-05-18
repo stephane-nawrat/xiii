@@ -7,6 +7,7 @@
 
 // === Import ===
 import models from "../models/registry.js";
+import authService from "../services/AuthService.js";
 
 // === Classe UserController ===
 class UserController {
@@ -69,27 +70,29 @@ class UserController {
   // Retour: JSON avec ID créé et status 201, 409 si email existe, ou erreur 500
   async create(req, res) {
     try {
-      // Extrait les données depuis le corps de la requête
-      const { email, password_hash, firstname, lastname, role_id, is_active } =
-        req.body;
+      // Extrait données (password en clair depuis frontend)
+      const { email, password, firstname, lastname, role_id } = req.body;
 
-      // Appelle insert() du UserModel avec objet user
+      // HASH PASSWORD avec AuthService (argon2)
+      const hashedPassword = await authService.hashPassword(password);
+
+      // Insert avec password hashé
       const insertId = await models.user.insert({
         email,
-        password_hash,
+        password_hash: hashedPassword, // Hash argon2
         firstname,
         lastname,
         role_id,
-        is_active,
+        is_active: true, // Default actif
       });
 
-      // Retourne succès avec l'ID du nouvel user (status 201 = Created)
+      // Retourne succès
       res.status(201).json({
         message: "User created successfully",
         id: insertId,
       });
     } catch (error) {
-      // Gestion spécifique : email en doublon (contrainte UNIQUE)
+      // Gestion email en doublon
       if (error.code === "ER_DUP_ENTRY") {
         return res.status(409).json({
           message: "Email already exists",

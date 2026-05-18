@@ -1,14 +1,17 @@
 // ==========================================
 // XIII Frontend - UsersTable Component
 // ==========================================
-// Tableau liste users avec filtres et actions CRUD
+// Tableau liste users avec filtres et CRUD complet
 
 // === IMPORTS ===
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import SlidePanel from '../ui/SlidePanel';
+import ConfirmModal from '../ui/ConfirmModal';
+import UserForm from './UserForm';
 
 function UsersTable() {
-  // === STATES ===
+  // === STATES DATA ===
   // users: liste complète depuis API
   const [users, setUsers] = useState([]);
   
@@ -24,62 +27,123 @@ function UsersTable() {
   // error: message erreur si API fail
   const [error, setError] = useState(null);
 
+  // === STATES CRUD ===
+  // SlidePanel
+  const [slidePanelOpen, setSlidePanelOpen] = useState(false);
+  const [panelMode, setPanelMode] = useState('create'); // 'create' | 'edit'
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  // Delete Modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+
   // === EFFECT: FETCH USERS ===
   // Exécuté 1 fois au montage component
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        
-        // API call GET /admin/users
-        // Retourne: { users: [...] }
-        const response = await api.get('/admin/users');
-        
-        // Stocker users (exclure admins role_id = 1)
-        const nonAdminUsers = response.data.users.filter(user => user.role_id !== 1);
-        setUsers(nonAdminUsers);
-        setError(null);
-        
-      } catch (err) {
-        console.error('Erreur fetch users:', err);
-        setError('Impossible de charger les utilisateurs');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
-  }, []); // [] = exécute 1 fois
+  }, []);
+
+  // === FUNCTION: FETCH USERS ===
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      
+      // API call GET /admin/users
+      const response = await api.get('/admin/users');
+      
+      // Stocker users (exclure admins role_id = 1)
+      const nonAdminUsers = response.data.users.filter(user => user.role_id !== 1);
+      setUsers(nonAdminUsers);
+      setError(null);
+      
+    } catch (err) {
+      console.error('Erreur fetch users:', err);
+      setError('Impossible de charger les utilisateurs');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // === EFFECT: FILTER USERS ===
   // Exécuté quand users ou roleFilter change
   useEffect(() => {
     if (roleFilter === 'all') {
-      // Pas de filtre: afficher tous
       setFilteredUsers(users);
     } else {
-      // Filtrer par role_name
-      // roleFilter = 'photographer' → role_name = 'photographer'
       const filtered = users.filter(user => 
         user.role_name.toLowerCase() === roleFilter.toLowerCase()
       );
       setFilteredUsers(filtered);
     }
-  }, [users, roleFilter]); // Dépendances: recalcule si users ou roleFilter change
+  }, [users, roleFilter]);
 
-  // === HANDLERS ===
+  // === HANDLERS CRUD ===
+
+  // Create: Ouvre panel mode create
+  const handleCreate = () => {
+    setPanelMode('create');
+    setSelectedUser(null);
+    setSlidePanelOpen(true);
+  };
+
+  // Edit: Ouvre panel mode edit avec user data
+  const handleEdit = (user) => {
+    setPanelMode('edit');
+    setSelectedUser(user);
+    setSlidePanelOpen(true);
+  };
+
+  // Delete: Ouvre modal confirmation
+  const handleDelete = (user) => {
+    setUserToDelete(user);
+    setDeleteModalOpen(true);
+  };
+
+  // Submit Form (Create ou Edit)
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (panelMode === 'create') {
+        // API POST /users
+        await api.post('/users', formData);
+      } else {
+        // API PUT /users/:id
+        await api.put(`/users/${selectedUser.id}`, formData);
+      }
+      
+      // Fermer panel
+      setSlidePanelOpen(false);
+      
+      // Refresh liste
+      fetchUsers();
+      
+    } catch (err) {
+      console.error('Erreur submit form:', err);
+      alert('Erreur lors de l\'enregistrement');
+    }
+  };
+
+  // Confirm Delete
+  const handleConfirmDelete = async () => {
+    try {
+      // API DELETE /users/:id
+      await api.delete(`/users/${userToDelete.id}`);
+      
+      // Fermer modal
+      setDeleteModalOpen(false);
+      setUserToDelete(null);
+      
+      // Refresh liste
+      fetchUsers();
+      
+    } catch (err) {
+      console.error('Erreur delete user:', err);
+      alert('Erreur lors de la suppression');
+    }
+  };
+
+  // === HANDLER: FILTER ===
   const handleRoleFilterChange = (e) => {
     setRoleFilter(e.target.value);
-  };
-
-  const handleEdit = (userId) => {
-    // TODO: Ouvrir SlidePanel edit (Phase suivante)
-    console.log('Edit user:', userId);
-  };
-
-  const handleDelete = (userId) => {
-    // TODO: Ouvrir modal confirmation (Phase suivante)
-    console.log('Delete user:', userId);
   };
 
   return (
@@ -104,7 +168,10 @@ function UsersTable() {
         </div>
 
         {/* Create User Button */}
-        <button className="px-6 py-2 bg-carbon text-cream text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+        <button 
+          onClick={handleCreate}
+          className="px-6 py-2 bg-carbon text-cream text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+        >
           + Create User
         </button>
       </div>
@@ -163,14 +230,12 @@ function UsersTable() {
             {/* Table Body */}
             <tbody>
               {filteredUsers.length === 0 ? (
-                // Pas de users
                 <tr>
                   <td colSpan="6" className="text-center py-8 text-gray-text text-sm">
                     No users found
                   </td>
                 </tr>
               ) : (
-                // Map users → rows
                 filteredUsers.map((user) => (
                   <tr key={user.id} className="border-b border-gray-200 hover:bg-cream-light transition-colors">
                     
@@ -209,7 +274,7 @@ function UsersTable() {
                     {/* Actions */}
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        {/* View (disabled/grisé) */}
+                        {/* View (disabled) */}
                         <button
                           disabled
                           className="text-xs text-gray-text opacity-50 cursor-not-allowed px-2 py-1"
@@ -220,7 +285,7 @@ function UsersTable() {
                         
                         {/* Edit */}
                         <button
-                          onClick={() => handleEdit(user.id)}
+                          onClick={() => handleEdit(user)}
                           className="text-xs text-carbon hover:underline px-2 py-1"
                         >
                           Edit
@@ -228,7 +293,7 @@ function UsersTable() {
                         
                         {/* Delete */}
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => handleDelete(user)}
                           className="text-xs text-red-600 hover:underline px-2 py-1"
                         >
                           Delete
@@ -242,6 +307,35 @@ function UsersTable() {
           </table>
         </div>
       )}
+
+      {/* === SLIDEPANEL CREATE/EDIT === */}
+      <SlidePanel
+        isOpen={slidePanelOpen}
+        onClose={() => setSlidePanelOpen(false)}
+        title={panelMode === 'create' ? 'Create User' : 'Edit User'}
+      >
+        <UserForm
+          mode={panelMode}
+          userData={selectedUser}
+          onSubmit={handleFormSubmit}
+          onCancel={() => setSlidePanelOpen(false)}
+        />
+      </SlidePanel>
+
+      {/* === MODAL DELETE CONFIRMATION === */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        title="Delete User"
+        message={`Are you sure you want to delete ${userToDelete?.email}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger={true}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setDeleteModalOpen(false);
+          setUserToDelete(null);
+        }}
+      />
 
     </div>
   );

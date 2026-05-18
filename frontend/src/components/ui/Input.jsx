@@ -1,12 +1,14 @@
+// ==========================================
+// XIII Frontend - Input Component
+// ==========================================
+// Input réutilisable avec label et validation
+
 function Input({ 
   label, 
   type = 'text', 
-  value, 
-  onChange, 
   error,
-  placeholder,
   required = false,
-  disabled = false 
+  ...props
 }) {
   return (
     <div className="w-full">
@@ -19,10 +21,6 @@ function Input({
 
       <input
         type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
         required={required}
         className={`
           w-full px-4 py-3
@@ -34,6 +32,7 @@ function Input({
           disabled:opacity-50 disabled:cursor-not-allowed
           ${error ? 'border-red-500' : 'border-gray-300'}
         `}
+        {...props}
       />
 
       {error && (
