@@ -7,8 +7,9 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api'; // Notre axios configuré (auth automatique)
+import api from '../services/api'; // axios configuré (auth automatique)
 import Sidebar from '../components/layout/Sidebar';
+import UsersTable from '../components/admin/UsersTable';
 
 function Dashboard() {
   // === CONTEXT AUTH ===
@@ -16,7 +17,6 @@ function Dashboard() {
 
   // === STATES NAVIGATION ===
   const [activeSection, setActiveSection] = useState('stats');
-  const [activeUserTab, setActiveUserTab] = useState('photographers');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // === STATES STATS API ===
@@ -75,13 +75,6 @@ function Dashboard() {
   const handleSectionChange = (section) => {
     setActiveSection(section);
   };
-
-  // === DATA CONFIG ===
-  const userTabs = [
-    { id: 'photographers', label: 'Photographers' },
-    { id: 'visitors', label: 'Visitors' },
-    { id: 'guests', label: 'Guests' }
-  ];
 
   return (
     <div className="min-h-screen bg-cream">
@@ -209,37 +202,9 @@ function Dashboard() {
               </div>
             )}
 
-            {/* === SECTION USERS (Avec Onglets) === */}
+            {/* === SECTION USERS === */}
             {activeSection === 'users' && (
-              <div>
-                {/* Onglets Users - Scroll horizontal mobile */}
-                <div className="flex gap-4 md:gap-6 mb-6 md:mb-8 border-b border-gray-300 overflow-x-auto">
-                  {userTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveUserTab(tab.id)}
-                      className={`
-                        pb-3 text-xs md:text-sm font-medium transition-colors border-b-2 whitespace-nowrap
-                        ${activeUserTab === tab.id
-                          ? 'text-carbon border-carbon'
-                          : 'text-gray-text border-transparent hover:text-carbon'
-                        }
-                      `}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Contenu selon onglet actif */}
-                <div className="bg-cream-light p-8 md:p-12 rounded-lg border border-gray-300">
-                  <p className="text-sm text-gray-text">
-                    {activeUserTab === 'photographers' && 'Photographers list will be here'}
-                    {activeUserTab === 'visitors' && 'Visitors list will be here'}
-                    {activeUserTab === 'guests' && 'Guests list will be here'}
-                  </p>
-                </div>
-              </div>
+              <UsersTable />
             )}
 
             {/* === SECTION SETTINGS === */}
