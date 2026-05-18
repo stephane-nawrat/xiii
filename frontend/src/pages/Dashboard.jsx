@@ -1,19 +1,73 @@
 // ==========================================
 // XIII Frontend - Dashboard Page
 // ==========================================
-// Dashboard responsive 3 breakpoints
+// Dashboard avec stats users réelles depuis API
 
-import { useState } from 'react';
+// === IMPORTS ===
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api'; // Notre axios configuré (auth automatique)
 import Sidebar from '../components/layout/Sidebar';
 
 function Dashboard() {
+  // === CONTEXT AUTH ===
   const { user, logout } = useAuth();
+
+  // === STATES NAVIGATION ===
   const [activeSection, setActiveSection] = useState('stats');
   const [activeUserTab, setActiveUserTab] = useState('photographers');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // === STATES STATS API ===
+  // stats: objet contenant données backend { totalUsers: 4, photographers: 1, ... }
+  const [stats, setStats] = useState(null);
+  
+  // loading: true pendant appel API, false après
+  const [loading, setLoading] = useState(true);
+  
+  // error: message erreur si API fail, null sinon
+  const [error, setError] = useState(null);
 
+  // === EFFECT: FETCH STATS AU MONTAGE ===
+  // useEffect(() => {}, []) = exécute 1 fois quand composant monte
+  useEffect(() => {
+    // Fonction async pour appel API (await nécessite async)
+    const fetchStats = async () => {
+      try {
+        // 1. Début chargement
+        setLoading(true);
+        
+        // 2. Appel API backend
+        // api.get('/admin/dashboard') fait:
+        //   - GET http://localhost:3001/api/admin/dashboard
+        //   - Ajoute automatiquement: Authorization: Bearer <token>
+        //   - Backend répond: { totalUsers: 4, photographers: 1, visitors: 2, guests: 1 }
+        const response = await api.get('/admin/dashboard');
+        
+        // 3. Stocker données dans state
+        setStats(response.data.stats);
+        
+        // 4. Réinitialiser erreur (si précédente tentative avait échoué)
+        setError(null);
+        
+      } catch (err) {
+        // Si API fail (réseau, 401, 500, etc.)
+        console.error('Erreur fetch stats:', err);
+        setError('Impossible de charger les statistiques');
+        
+      } finally {
+        // Toujours exécuté (succès ou erreur)
+        setLoading(false);
+      }
+    };
+
+    // Exécuter fonction fetch
+    fetchStats();
+    
+  }, []); // [] = dépendances vides = exécute 1 fois au montage
+
+  // === HANDLERS ===
   const handleLogout = () => {
     logout();
   };
@@ -22,6 +76,7 @@ function Dashboard() {
     setActiveSection(section);
   };
 
+  // === DATA CONFIG ===
   const userTabs = [
     { id: 'photographers', label: 'Photographers' },
     { id: 'visitors', label: 'Visitors' },
@@ -82,73 +137,74 @@ function Dashboard() {
 
             {/* === SECTION STATS === */}
             {activeSection === 'stats' && (
-              <div className="space-y-8 md:space-y-10">
+              <div>
                 
-                {/* Section 1: Users Stats */}
-                <div>
-                  <h3 className="text-xs md:text-sm font-medium text-gray-text mb-4 md:mb-5 uppercase tracking-wide">
-                    Users
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Total Users</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Photographers</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Visitors</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Guests</p>
-                    </div>
+                {/* === ÉTAT LOADING === */}
+                {/* Affiché pendant appel API (loading = true) */}
+                {loading && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-text">Loading statistics...</p>
                   </div>
-                </div>
+                )}
 
-                {/* Section 2: Content Stats */}
-                <div>
-                  <h3 className="text-xs md:text-sm font-medium text-gray-text mb-4 md:mb-5 uppercase tracking-wide">
-                    Content
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Total Photos</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Series</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Selections</p>
-                    </div>
-                    
-                    <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
-                      <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">--</p>
-                      <p className="text-xs md:text-sm text-gray-text">Downloads</p>
-                    </div>
+                {/* === ÉTAT ERROR === */}
+                {/* Affiché si API fail (error != null) */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
-                </div>
+                )}
 
-                {/* Section 3: Site Traffic Graph */}
-                <div>
-                  <h3 className="text-xs md:text-sm font-medium text-gray-text mb-4 md:mb-5 uppercase tracking-wide">
-                    Site Traffic
-                  </h3>
-                  <div className="bg-cream-light p-8 md:p-10 rounded-lg border border-gray-300 h-48 md:h-56 flex items-center justify-center">
-                    <p className="text-xs md:text-sm text-gray-text">Graph: Visitors over time (placeholder)</p>
+                {/* === ÉTAT SUCCESS === */}
+                {/* Affiché quand: pas loading ET pas error ET stats existe */}
+                {!loading && !error && stats && (
+                  <div>
+                    {/* Section Users Stats */}
+                    <div>
+                      <h3 className="text-xs md:text-sm font-medium text-gray-text mb-4 md:mb-5 uppercase tracking-wide">
+                        Users
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                        
+                        {/* Card Total Users */}
+                        <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
+                          {/* {stats.totalUsers} = affiche valeur depuis API (ex: 4) */}
+                          <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">
+                            {stats.totalUsers}
+                          </p>
+                          <p className="text-xs md:text-sm text-gray-text">Total Users</p>
+                        </div>
+                        
+                        {/* Card Photographers */}
+                        <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
+                          {/* {stats.photographers} = valeur API (ex: 1) */}
+                          <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">
+                            {stats.photographers}
+                          </p>
+                          <p className="text-xs md:text-sm text-gray-text">Photographers</p>
+                        </div>
+                        
+                        {/* Card Visitors */}
+                        <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
+                          {/* {stats.visitors} = valeur API (ex: 2) */}
+                          <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">
+                            {stats.visitors}
+                          </p>
+                          <p className="text-xs md:text-sm text-gray-text">Visitors</p>
+                        </div>
+                        
+                        {/* Card Guests */}
+                        <div className="bg-cream-light p-6 md:p-7 rounded-lg border border-gray-300">
+                          {/* {stats.guests} = valeur API (ex: 1) */}
+                          <p className="text-2xl md:text-3xl font-bold text-carbon mb-2">
+                            {stats.guests}
+                          </p>
+                          <p className="text-xs md:text-sm text-gray-text">Guests</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
 
               </div>
             )}

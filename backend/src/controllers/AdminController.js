@@ -9,16 +9,13 @@ import models from "../models/registry.js";
 class AdminController {
   // === Méthode : dashboard ===
   // GET /api/admin/dashboard
-  // Retour: Statistiques admin
+  // Retour: Statistiques admin (users sans admins)
   async dashboard(req, res) {
     try {
       // 1. Récupérer statistiques
+      // Total users SANS admins (role_id != 1)
       const [users] = await models.user.database.query(
-        "SELECT COUNT(*) as total FROM users",
-      );
-
-      const [admins] = await models.user.database.query(
-        "SELECT COUNT(*) as total FROM users WHERE role_id = 1",
+        "SELECT COUNT(*) as total FROM users WHERE role_id != 1",
       );
 
       const [photographers] = await models.user.database.query(
@@ -29,13 +26,17 @@ class AdminController {
         "SELECT COUNT(*) as total FROM users WHERE role_id = 3",
       );
 
-      // 2. Retourner les stats
+      const [guests] = await models.user.database.query(
+        "SELECT COUNT(*) as total FROM users WHERE role_id = 4",
+      );
+
+      // 2. Retourner les stats (pas d'admins dans response)
       res.status(200).json({
         stats: {
-          totalUsers: users[0].total,
-          admins: admins[0].total,
+          totalUsers: users[0].total, // Total sans admins
           photographers: photographers[0].total,
           visitors: visitors[0].total,
+          guests: guests[0].total,
         },
       });
     } catch (error) {
