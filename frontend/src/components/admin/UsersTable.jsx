@@ -10,7 +10,7 @@ import SlidePanel from '../ui/SlidePanel';
 import ConfirmModal from '../ui/ConfirmModal';
 import UserForm from './UserForm';
 
-function UsersTable() {
+function UsersTable({ onUserChange }) {
   // === STATES DATA ===
   // users: liste complète depuis API
   const [users, setUsers] = useState([]);
@@ -100,46 +100,56 @@ function UsersTable() {
   };
 
   // Submit Form (Create ou Edit)
-  const handleFormSubmit = async (formData) => {
-    try {
-      if (panelMode === 'create') {
-        // API POST /users
-        await api.post('/users', formData);
-      } else {
-        // API PUT /users/:id
-        await api.put(`/users/${selectedUser.id}`, formData);
-      }
-      
-      // Fermer panel
-      setSlidePanelOpen(false);
-      
-      // Refresh liste
-      fetchUsers();
-      
-    } catch (err) {
-      console.error('Erreur submit form:', err);
-      alert('Erreur lors de l\'enregistrement');
+const handleFormSubmit = async (formData) => {
+  try {
+    if (panelMode === 'create') {
+      // API POST /users
+      await api.post('/users', formData);
+    } else {
+      // API PUT /users/:id
+      await api.put(`/users/${selectedUser.id}`, formData);
     }
-  };
+    
+    // Fermer panel
+    setSlidePanelOpen(false);
+    
+    // Refresh liste
+    fetchUsers();
+    
+    // Appelle callback parent pour refresh stats Dashboard
+    if (onUserChange) {
+      onUserChange();
+    }
+    
+  } catch (err) {
+    console.error('Erreur submit form:', err);
+    alert('Erreur lors de l\'enregistrement');
+  }
+};
 
-  // Confirm Delete
-  const handleConfirmDelete = async () => {
-    try {
-      // API DELETE /users/:id
-      await api.delete(`/users/${userToDelete.id}`);
-      
-      // Fermer modal
-      setDeleteModalOpen(false);
-      setUserToDelete(null);
-      
-      // Refresh liste
-      fetchUsers();
-      
-    } catch (err) {
-      console.error('Erreur delete user:', err);
-      alert('Erreur lors de la suppression');
+// Confirm Delete
+const handleConfirmDelete = async () => {
+  try {
+    // API DELETE /users/:id
+    await api.delete(`/users/${userToDelete.id}`);
+    
+    // Fermer modal
+    setDeleteModalOpen(false);
+    setUserToDelete(null);
+    
+    // Refresh liste
+    fetchUsers();
+    
+    // Appelle callback parent pour refresh stats Dashboard
+    if (onUserChange) {
+      onUserChange();
     }
-  };
+    
+  } catch (err) {
+    console.error('Erreur delete user:', err);
+    alert('Erreur lors de la suppression');
+  }
+};
 
   // === HANDLER: FILTER ===
   const handleRoleFilterChange = (e) => {

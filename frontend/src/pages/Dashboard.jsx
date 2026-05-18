@@ -29,43 +29,26 @@ function Dashboard() {
   // error: message erreur si API fail, null sinon
   const [error, setError] = useState(null);
 
-  // === EFFECT: FETCH STATS AU MONTAGE ===
-  // useEffect(() => {}, []) = exécute 1 fois quand composant monte
-  useEffect(() => {
-    // Fonction async pour appel API (await nécessite async)
-    const fetchStats = async () => {
-      try {
-        // 1. Début chargement
-        setLoading(true);
-        
-        // 2. Appel API backend
-        // api.get('/admin/dashboard') fait:
-        //   - GET http://localhost:3001/api/admin/dashboard
-        //   - Ajoute automatiquement: Authorization: Bearer <token>
-        //   - Backend répond: { totalUsers: 4, photographers: 1, visitors: 2, guests: 1 }
-        const response = await api.get('/admin/dashboard');
-        
-        // 3. Stocker données dans state
-        setStats(response.data.stats);
-        
-        // 4. Réinitialiser erreur (si précédente tentative avait échoué)
-        setError(null);
-        
-      } catch (err) {
-        // Si API fail (réseau, 401, 500, etc.)
-        console.error('Erreur fetch stats:', err);
-        setError('Impossible de charger les statistiques');
-        
-      } finally {
-        // Toujours exécuté (succès ou erreur)
-        setLoading(false);
-      }
-    };
+  // === FUNCTION: FETCH STATS ===
+  // Fonction extraite pour être réutilisable
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/admin/dashboard');
+      setStats(response.data.stats);
+      setError(null);
+    } catch (err) {
+      console.error('Erreur fetch stats:', err);
+      setError('Impossible de charger les statistiques');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Exécuter fonction fetch
+  // === EFFECT: FETCH STATS AU MONTAGE ===
+  useEffect(() => {
     fetchStats();
-    
-  }, []); // [] = dépendances vides = exécute 1 fois au montage
+  }, []);
 
   // === HANDLERS ===
   const handleLogout = () => {
@@ -204,9 +187,9 @@ function Dashboard() {
 
             {/* === SECTION USERS === */}
             {activeSection === 'users' && (
-              <UsersTable />
-            )}
-
+            <UsersTable onUserChange={fetchStats} />
+          )}
+          
             {/* === SECTION SETTINGS === */}
             {activeSection === 'settings' && (
               <div className="bg-cream-light p-8 md:p-12 rounded-lg border border-gray-300">
