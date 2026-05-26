@@ -182,7 +182,7 @@ collection:
     meta:
       id: fld_f12a2b272f834ec5a153aebbdccf03ec
       created: 1778272764890
-      modified: 1778314478672
+      modified: 1778483668547
       sortKey: -1778272764965
       description: ""
     children:
@@ -269,7 +269,7 @@ collection:
     meta:
       id: fld_a7d87e5a9b7e45d792c6e95b7df8ce9d
       created: 1778314442866
-      modified: 1778314475682
+      modified: 1778321432670
       sortKey: -1778272764940
       description: ""
     children:
@@ -352,6 +352,166 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Users-Validation
+    meta:
+      id: fld_a848a164a7304595af9407b3143e53a6
+      created: 1779824373028
+      modified: 1779826263110
+      sortKey: -1778272764977.5
+      description: ""
+    children:
+      - url: "{{ base_url }}/users"
+        name: Invalid Email
+        meta:
+          id: req_5850baf95d874641b38cc2f280b4fa5e
+          created: 1779824512747
+          modified: 1779825596113
+          isPrivate: false
+          description: ""
+          sortKey: -1779824512747
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "pasunmail",
+              "password": "test123",
+              "firstname": "Jonas",
+              "lastname": "Valuska",
+              "role_id": 2
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/users"
+        name: Password Too Short
+        meta:
+          id: req_08adeb911c904b9c9c85c7e0ad246fd5
+          created: 1779824685087
+          modified: 1779825928533
+          isPrivate: false
+          description: ""
+          sortKey: -1779824685087
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "jonas@xiii.local",
+              "password": "abc",
+              "firstname": "Jonas",
+              "lastname": "Valuska",
+              "role_id": 2
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/users"
+        name: Admin Role Blocked
+        meta:
+          id: req_9a11fee42293426b91ffcd351c6f661a
+          created: 1779824706992
+          modified: 1779826008711
+          isPrivate: false
+          description: ""
+          sortKey: -1779824706992
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "hacker@evil.com",
+              "password": "test123",
+              "firstname": "Evil",
+              "lastname": "Hacker",
+              "role_id": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/users"
+        name: Valid Create
+        meta:
+          id: req_dbf97894524e4c67a6e3388c5dcc531c
+          created: 1779824726389
+          modified: 1779826128946
+          isPrivate: false
+          description: ""
+          sortKey: -1779824726389
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "lewis@xiii.local",
+              "password": "test123",
+              "firstname": "Lewis",
+              "lastname": "Caroll",
+              "role_id": 3
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -363,5 +523,8 @@ environments:
   meta:
     id: env_449c1833cac385065a7f8544f7407cbfb2211b41
     created: 1778258115977
-    modified: 1778258115977
+    modified: 1779825478369
     isPrivate: false
+  data:
+    base_url: http://localhost:3001/api
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQHhpaWkubG9jYWwiLCJyb2xlX2lkIjoxLCJpYXQiOjE3Nzk4MjM1NzksImV4cCI6MTc3OTkwOTk3OX0.Ca-1U6qR2zT8-cvnfcpqiFnnR0tlW0_n3unVMtupiW8
