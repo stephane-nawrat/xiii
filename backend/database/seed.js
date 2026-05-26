@@ -22,20 +22,20 @@ const users = [
   },
   {
     email: "photographer@xiii.local",
-    firstname: "Photo",
-    lastname: "Grapher",
+    firstname: "Jonas",
+    lastname: "Valuska",
     role: "photographer",
   },
   {
     email: "visitor@xiii.local",
-    firstname: "Visitor",
-    lastname: "User",
+    firstname: "Lewis",
+    lastname: "Caroll",
     role: "visitor",
   },
   {
     email: "guest@xiii.local",
-    firstname: "Guest",
-    lastname: "User",
+    firstname: "Alain",
+    lastname: "Damasio",
     role: "guest",
   },
 ];

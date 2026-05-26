@@ -1,0 +1,18 @@
+/* ==========================================
+   XIII Frontend - Styles Globaux
+   ========================================== */
+
+/* === Directives Tailwind === */
+/* PostCSS remplace ces directives par le CSS Tailwind complet */
+
+/* Base: Reset CSS + styles de base (body, headings, etc.) */
+@tailwind base;
+
+/* Components: Classes composants Tailwind (optionnel) */
+@tailwind components;
+
+/* Utilities: Toutes les classes utilitaires Tailwind (bg-, text-, flex-, etc.) */
+@tailwind utilities;
+
+/* === Styles Personnalisés (si nécessaire plus tard) === */
+/* Ajouter ici les styles custom qui ne peuvent pas être faits en Tailwind */
