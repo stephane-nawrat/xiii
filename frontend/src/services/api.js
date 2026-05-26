@@ -51,8 +51,8 @@ api.interceptors.response.use(
       // Supprimer token invalide
       localStorage.removeItem("token");
 
-      // Rediriger vers login (on ajoutera cette logique plus tard)
-      // window.location.href = '/login';
+      // Rediriger vers login
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
