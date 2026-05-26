@@ -15,6 +15,29 @@ class UserModel extends AbstractModel {
     super({ table: "users" });
   }
 
+  // === Méthode : findAll() ===
+  // Surcharge AbstractModel.findAll()
+  // Retourne tous les users SANS password_hash
+  async findAll() {
+    const [rows] = await this.database.query(
+      `SELECT id, email, firstname, lastname, role_id, is_active, created_at
+       FROM ${this.table}`,
+    );
+    return rows;
+  }
+
+  // === Méthode : find(id) ===
+  // Surcharge AbstractModel.find()
+  // Retourne un user par ID SANS password_hash
+  async find(id) {
+    const [rows] = await this.database.query(
+      `SELECT id, email, firstname, lastname, role_id, is_active, created_at
+       FROM ${this.table} WHERE id = ?`,
+      [id],
+    );
+    return rows[0];
+  }
+
   // === Méthode : insert(user) ===
   // Insère un nouvel utilisateur dans la base
   // Paramètre: user (objet avec email, password_hash, firstname, lastname, role_id, is_active)
