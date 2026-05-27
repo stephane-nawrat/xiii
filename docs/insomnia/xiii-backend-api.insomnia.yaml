@@ -265,6 +265,38 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ base_url }}/auth/login"
+        name: Auth - Brute Force Test
+        meta:
+          id: req_05ccd6b0d7b840ba98fff31f32566501
+          created: 1779874917022
+          modified: 1779875007220
+          isPrivate: false
+          description: ""
+          sortKey: -1779874917022
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "admin@xiii.local",
+              "password": "wrongpassword"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
   - name: Admin
     meta:
       id: fld_a7d87e5a9b7e45d792c6e95b7df8ce9d
