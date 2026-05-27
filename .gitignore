@@ -46,3 +46,6 @@ tmp/
 # === Tests ===
 coverage/
 .nyc_output/
+
+# === Claude ===
+.claude/
